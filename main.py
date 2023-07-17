@@ -120,7 +120,6 @@ while True:
     # Draw a red circle on the image
     frame = cv2.circle(frame, avg_position, 20, (0, 0, 255), -1)
 
-    print(count_objects(mask))
     # Display the original image, the blue pixels mask, and the resulting image
     cv2.imshow('Blue Pixels Mask', mask)
     cv2.imshow('Result', result)
