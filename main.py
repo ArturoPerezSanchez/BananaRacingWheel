@@ -1,41 +1,8 @@
 import cv2
 import numpy as np
+from utils import flipImg, createMask, loadJSON, count_objects, addBlackBox, addTextToImg
 
-
-# Define the range of blue color in HSV
-lower_color = np.array([100, 70, 70])
-upper_color = np.array([130, 255, 255])
-
-# Create a VideoCapture object to access the webcam
-cap = cv2.VideoCapture(0)
-
-
-def addBlackBox(img, box_height=300):
-    height, width, _ = img.shape
-    black_box = np.zeros((box_height, width, 3), dtype=np.uint8)
-    return np.concatenate((img, black_box), axis=0)
-
-def flipImg(img):
-    return cv2.flip(img, 1)
-
-def addTextToImg(img):
-    text = 'Press Q or ESC to quit'
-    height, width, _ = img.shape
-    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
-    text_width = text_size[0]
-    text_height = text_size[1]
-    text_position_x = 10
-    text_position_y = int(height / 2) + (text_height // 2) + 10
-    cv2.putText(img, text, (text_position_x, text_position_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-    return img
-
-def createMask(frame):
-
-    # Convert the image from BGR to HSV color space
-    hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    # Create a mask of the blue pixels
-    mask = cv2.inRange(hsv_image, lower_color, upper_color)
+def AnalyzeMask(frame, mask):
 
     # Find non-zero pixels in the mask
     non_zero_pixels = cv2.findNonZero(mask)
@@ -72,63 +39,46 @@ def createMask(frame):
     # Combine the foreground and background to get the final result
     result = cv2.add(foreground, background)
 
-    return mask, result, average_position
+    return result, average_position
 
-def count_objects(mask, kernel_size=(10, 10)):
-    # Convert the mask to binary (if it's not already binary)
-    mask_binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)[1]
-
-    # Apply morphological opening to remove small noise
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
-    mask_opened = cv2.morphologyEx(mask_binary, cv2.MORPH_OPEN, kernel)
-
-    # Apply morphological closing to merge nearby regions
-    mask_closed = cv2.morphologyEx(mask_opened, cv2.MORPH_CLOSE, kernel)
-
-    # Find contours in the closed mask
-    contours, _ = cv2.findContours(mask_closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # Extract pixel coordinates for each contour (object)
-    objects = []
-    for contour in contours:
-        object_pixels = []
-        for point in contour:
-            x, y = point[0]
-            object_pixels.append((x, y))
-        objects.append(object_pixels)
-
-    return len(objects)
-
-
+# Create a VideoCapture object to access the webcam
+cap = cv2.VideoCapture(0)
 
 while True:
     # Read frame-by-frame from the webcam
     _, frame = cap.read()
- 
+
+
     # Flip the frame horizontally
     frame = flipImg(frame)
 
+    # Obtain the selected color from the json file
+    red, green, blue = loadJSON()
+
     # Create a mask highlighting the selected color
-    mask, result, avg_position = createMask(frame)
+    mask = createMask(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), r=red, g=green, b=blue, treshold=50)
+
+    # Analyze the mask to get the object information
+    result, avg_position = AnalyzeMask(frame, mask)
 
     # Create a black image of the same size as the frame
-    frame = addBlackBox(frame)
+    result = addBlackBox(result)
 
-    # Add a text overlay to the frame
-    frame = addTextToImg(frame)
+    # Add a text overlay to the result
+    result = addTextToImg(result, "Press Q or ESC to quit")
     
     # Draw a red circle on the image
-    frame = cv2.circle(frame, avg_position, 20, (0, 0, 255), -1)
+    result = cv2.circle(result, avg_position, 20, (0, 0, 255), -1)
 
     # Display the original image, the blue pixels mask, and the resulting image
-    cv2.imshow('Blue Pixels Mask', mask)
-    cv2.imshow('Result', result)
+    print(count_objects(mask))
     cv2.imshow('Webcam', frame)
-
+    cv2.imshow('Mask', mask)
+    cv2.imshow('Banana Racing Wheel', result)
 
     # Check for the conditions to exit the loop
     c = cv2.waitKey(1)
-    if (c == 27 or c==ord('q')) or (cv2.getWindowProperty('Webcam', cv2.WND_PROP_VISIBLE) < 1):
+    if (c == 27 or c==ord('q')) or (cv2.getWindowProperty('Banana Racing Wheel', cv2.WND_PROP_VISIBLE) < 1):
         break
 
 # Release the VideoCapture object and close the window
