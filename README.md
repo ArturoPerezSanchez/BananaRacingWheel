@@ -64,11 +64,11 @@ Thank you for considering contributing to Banana Racing Wheel! We welcome any fe
 
 ## Code of Conduct
 
-Please note that Banana Racing Wheel follows a code of conduct. We expect all contributors and users to adhere to it to maintain a respectful and inclusive community. The code of conduct can be found in the `CODE_OF_CONDUCT.md` file.
+Please note that Banana Racing Wheel follows a code of conduct. We expect all contributors and users to adhere to it to maintain a respectful and inclusive community. The code of conduct can be found in the [`CODE_OF_CONDUCT.md`](https://github.com/ArturoPerezSanchez/BananaRacingWheel/blob/main/CODE_OF_CONDUCT.md) file.
 
 ## License
 
-Banana Racing Wheel is licensed under the [MIT License](https://opensource.org/license/mit/) , which means you are free to use, modify, and distribute the library, but you must include the original license and copyright notice.
+Banana Racing Wheel is licensed under the [MIT License](https://opensource.org/license/mit/), which means you are free to use, modify, and distribute the library, but you must include the original license and copyright notice.
 
 ## Contact
 
