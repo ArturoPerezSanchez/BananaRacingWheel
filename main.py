@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from utils import flipImg, createMask, loadJSON, count_objects, addBlackBox, addTextToImg
+from utils import flipImg, createMask, loadJSON, detect_objects, addBlackBox, addTextToImg
 
 def AnalyzeMask(frame, mask):
 
@@ -71,7 +71,7 @@ while True:
     result = cv2.circle(result, avg_position, 20, (0, 0, 255), -1)
 
     # Display the original image, the blue pixels mask, and the resulting image
-    print(count_objects(mask))
+    print(detect_objects(mask))
     cv2.imshow('Webcam', frame)
     cv2.imshow('Mask', mask)
     cv2.imshow('Banana Racing Wheel', result)

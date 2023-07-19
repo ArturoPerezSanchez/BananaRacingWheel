@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 import json
-
+from banana_class import banana
 
 def createMask(hsv_image, r=50, g=50, b=205, treshold=50):
     # Define the range of blue color in HSV
@@ -58,27 +58,47 @@ def addTextToImg(img, text):
     cv2.putText(img, text, (text_position_x, text_position_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     return img
 
-def count_objects(mask, kernel_size=(10, 10)):
-    # Convert the mask to binary (if it's not already binary)
-    mask_binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)[1]
+def detect_objects(mask, kernel_size=(10, 10)):
+	# Convert the mask to binary (if it's not already binary)
+	mask_binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)[1]
 
-    # Apply morphological opening to remove small noise
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
-    mask_opened = cv2.morphologyEx(mask_binary, cv2.MORPH_OPEN, kernel)
+	# Apply morphological opening to remove small noise
+	kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
+	mask_opened = cv2.morphologyEx(mask_binary, cv2.MORPH_OPEN, kernel)
 
-    # Apply morphological closing to merge nearby regions
-    mask_closed = cv2.morphologyEx(mask_opened, cv2.MORPH_CLOSE, kernel)
+	# Apply morphological closing to merge nearby regions
+	mask_closed = cv2.morphologyEx(mask_opened, cv2.MORPH_CLOSE, kernel)
 
-    # Find contours in the closed mask
-    contours, _ = cv2.findContours(mask_closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	# Find contours in the closed mask
+	contours, _ = cv2.findContours(mask_closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Extract pixel coordinates for each contour (object)
-    objects = []
-    for contour in contours:
-        object_pixels = []
-        for point in contour:
-            x, y = point[0]
-            object_pixels.append((x, y))
-        objects.append(object_pixels)
+	# Extract pixel coordinates for each contour (object)
+	objects = []
+	for contour in contours:
+		x_min, y_min = contour[0][0]
+		x_max, y_max = contour[0][0]
+		left = []
+		right = []
+		for point in contour:
+			x, y = point[0]
+			if x_min is None or x <= x_min:
+				if(x < x_min):
+					x_min = x
+					left = []
+				left.append(y)
+			elif x_max is None or x >= x_max:
+				if(x > x_min):
+					x_max = x
+					right = []
+				right.append(y)
 
-    return len(objects)
+
+			if y_min is None or y < y_min: y_min = y
+			elif y_max is None or y > y_max: y_max = y
+
+		avg_l = np.average(left)
+		avg_r = np.average(right)
+		detected_banana = banana(x_min, y_min, x_max, y_max, avg_l, avg_r)
+		objects.append(detected_banana)
+
+	return len(objects)
