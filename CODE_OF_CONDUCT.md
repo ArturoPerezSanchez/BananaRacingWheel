@@ -20,7 +20,7 @@ Take responsibility for your actions and words. Refrain from engaging in disrupt
 Follow the project's guidelines, coding conventions, and processes for contributing. Before submitting changes, ensure they align with the project's goals and do not conflict with existing code or features.
 
 ## Report Inappropriate Behavior
-If you experience or witness any behavior that violates this Code of Conduct, please report it to the project maintainers immediately. You can do so by contacting me at [arturoperez.bs@gmail.com](arturoperez.bs@gmail.com). All reports will be kept confidential, and appropriate actions will be taken if necessary.
+If you experience or witness any behavior that violates this Code of Conduct, please report it to the project maintainers immediately. You can do so by contacting me at [mailto:arturoperez.bs@gmail.com](arturoperez.bs@gmail.com). All reports will be kept confidential, and appropriate actions will be taken if necessary.
 
 ## Enforcement
 If a participant violates this Code of Conduct, the project maintainers may take appropriate action, such as issuing warnings, temporary suspension, or permanent removal from the project, depending on the severity and frequency of the violation.
@@ -29,6 +29,6 @@ If a participant violates this Code of Conduct, the project maintainers may take
 This Code of Conduct is adapted from the Contributor Covenant, version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html](https://www.contributor-covenant.org/version/2/1/code_of_conduct.html). We thank the Contributor Covenant team for their work in promoting a positive and inclusive open-source community.
 
 ## Questions or Concerns
-If you have any questions or concerns about the Code of Conduct or the behavior within the BananaRacingWheel community, please reach out to the project maintainers at me via [arturoperez.bs@gmail.com](arturoperez.bs@gmail.com).
+If you have any questions or concerns about the Code of Conduct or the behavior within the BananaRacingWheel community, please reach out to the project maintainers at me via [mailto:arturoperez.bs@gmail.com](arturoperez.bs@gmail.com).
 
 Let's work together to create an enjoyable and productive environment for all contributors and users. Happy coding! 🍌🎮
