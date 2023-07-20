@@ -58,6 +58,22 @@ def addTextToImg(img, text):
     cv2.putText(img, text, (text_position_x, text_position_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     return img
 
+def drawRedRectangle(image, banana, color=(0, 0, 255), thickness=2):
+	point1, point2 = banana.getRectangle()
+	cv2.rectangle(image, point1, point2, color, thickness)
+	return image
+
+def drawRotationLine(image, banana, color=(0, 0, 255), thickness=2):
+	point1, point2 = banana.getLinePoints()
+    # Draw circles at each point
+	cv2.circle(image, point1, 10, color, -1)  # Green circle at point1
+	cv2.circle(image, point2, 10, color, -1)  # Green circle at point2
+
+	# Draw a line connecting the two points
+	cv2.line(image, point1, point2, color, 2)
+
+	return image
+
 def detect_objects(mask, kernel_size=(10, 10)):
 	# Convert the mask to binary (if it's not already binary)
 	mask_binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)[1]
@@ -100,5 +116,13 @@ def detect_objects(mask, kernel_size=(10, 10)):
 		avg_r = np.average(right)
 		detected_banana = banana(x_min, y_min, x_max, y_max, avg_l, avg_r)
 		objects.append(detected_banana)
-
-	return len(objects)
+	
+	objects.sort()
+	if(not objects): return None
+	detected_banana = objects[-1]
+	# print('size: ', detected_banana.getSize())
+	# print('Square: ', detected_banana.getSquare())
+	# print('Rotation: ', detected_banana.getRotation())
+	# print('Center: ', detected_banana.getCenter())
+	# print('LinePoints: ', detected_banana.getLinePoints())
+	return detected_banana
