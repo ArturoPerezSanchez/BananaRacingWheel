@@ -14,18 +14,20 @@ class banana():
     def getSize(self):
         return (self.x_max-self.x_min) * (self.y_max-self.y_min)
 
-    def getSquare(self):
+    def getRectangle(self):
         return ((self.x_min, self.y_min), (self.x_max, self.y_max))
 
     def getRotation(self):
         slope = (self.avg_r-self.avg_l)/(self.x_max - self.x_min)
-        return arctan(slope)/(pi/2)
+
+        #Should be (slope)/(pi/2), but works better with (pi/3) due to the object thickness
+        return min(1, max(-1, arctan(slope)/(pi/3)))
 
     def getLinePoints(self):
-        return ((x_min, avg_l), (x_max, avg_r))
+        return ((int(self.x_min), int(self.avg_l)), (int(self.x_max), int(self.avg_r)))
 
     def getCenter(self):
-        return (x_min + (x_max - x_min)), (y_min + (y_max - y_min))
+        return (self.x_min + (self.x_max - self.x_min)), (self.y_min + (self.y_max - self.y_min))
 
     def __gt__(self, other_banana):
         return self.size > other_banana.size
@@ -33,3 +35,7 @@ class banana():
     def __str__(self):
         center_x, center_y = self.getCenter()
         return f"A banana of size {self.size}, at position x: {center_x}, y: {center_y}"
+
+    def __repr__(self):
+        center_x, center_y = self.getCenter()
+        return f"A banana of size {self.size}, at position x: {center_x}, y: {center_y}"      
