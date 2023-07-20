@@ -2,7 +2,7 @@ import tkinter as tk
 import cv2
 from PIL import ImageTk, Image
 import json
-from utils import flipImg, createMask, loadJSON
+from utils import flipImg, createMask, loadJSON, detect_objects, drawRedRectangle, drawRotationLine
 
 class GUI:
     def __init__(self, root):
@@ -88,6 +88,15 @@ class GUI:
             # Create a mask highlighting the selected color
             mask = createMask(frame, r=self.red, g=self.green, b=self.blue, treshold=50)
             
+            # Try to detect the object
+            banana = detect_objects(mask)
+
+            # If detected, draw the container rectangle and the angle
+            if(banana is not None):
+                self.banana = banana
+                frame = drawRedRectangle(frame, banana, color=(255,0,0))
+                frame = drawRotationLine(frame, banana, color=(255,0,0))
+
             # Resize the frame to fit the GUI
             frame_resized = cv2.resize(frame, (320, 240))
 

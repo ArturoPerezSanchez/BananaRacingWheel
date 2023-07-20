@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from utils import flipImg, createMask, loadJSON, detect_objects, addBlackBox, addTextToImg
+from utils import flipImg, createMask, loadJSON, detect_objects, addBlackBox, addTextToImg, drawRedRectangle, drawRotationLine
 
 def AnalyzeMask(frame, mask):
 
@@ -66,12 +66,15 @@ while True:
 
     # Add a text overlay to the result
     result = addTextToImg(result, "Press Q or ESC to quit")
-    
-    # Draw a red circle on the image
-    result = cv2.circle(result, avg_position, 20, (0, 0, 255), -1)
+
+    # Detect the tacked object
+    banana = detect_objects(mask)
+
+    if(banana is not None):
+        result = drawRedRectangle(result, banana)
+        result = drawRotationLine(result, banana)
 
     # Display the original image, the blue pixels mask, and the resulting image
-    print(detect_objects(mask))
     cv2.imshow('Webcam', frame)
     cv2.imshow('Mask', mask)
     cv2.imshow('Banana Racing Wheel', result)
