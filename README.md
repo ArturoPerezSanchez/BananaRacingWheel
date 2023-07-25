@@ -68,7 +68,7 @@ Please note that Banana Racing Wheel follows a code of conduct. We expect all co
 
 ## License
 
-Banana Racing Wheel is licensed under the [MIT License](https://opensource.org/license/mit/), which means you are free to use, modify, and distribute the library, but you must include the original license and copyright notice.
+Banana Racing Wheel is licensed under the [MIT License](https://github.com/ArturoPerezSanchez/BananaRacingWheel/blob/main/LICENSE), which means you are free to use, modify, and distribute the library, but you must include the original license and copyright notice.
 
 ## Contact
 
