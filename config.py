@@ -2,7 +2,7 @@ import tkinter as tk
 import cv2
 from PIL import ImageTk, Image
 import json
-from utils import flipImg, createMask, loadJSON, detect_objects, drawRedRectangle, drawRotationLine
+from utils import flipImg, createMask, loadJSON, detect_objects, drawRedRectangle, drawRotationLine, addDashboard, overlay_images
 
 class GUI:
     def __init__(self, root):
@@ -16,7 +16,7 @@ class GUI:
         self.right_frame = tk.Frame(self.root)
         self.right_frame.pack(side=tk.RIGHT, padx=10, pady=10)
         # Create a label for the text
-        text_label = tk.Label(self.left_frame, text="Adjust the color bars until you see only\n the desired object on the screen below",
+        text_label = tk.Label(self.left_frame, text="Adjust the color bars until you see only\n the desired object on the screen",
                               font=("Helvetica", 16), pady=10)
         text_label.pack()
 
@@ -96,28 +96,25 @@ class GUI:
                 self.banana = banana
                 frame = drawRedRectangle(frame, banana, color=(255,0,0))
                 frame = drawRotationLine(frame, banana, color=(255,0,0))
-
+                frame = addDashboard(frame, rotation=banana.getRotation(), s1=0, s2=0)
+            else:
+                frame = addDashboard(frame, rotation=0, s1=0, s2=0)
             # Resize the frame to fit the GUI
-            frame_resized = cv2.resize(frame, (320, 240))
+            frame_resized = cv2.resize(frame, (600, 600))
 
             # Resize the mask to fit the GUI
-            mask_resized = cv2.resize(mask, (320, 240))
-            
+            mask_resized = cv2.resize(mask, (160, 120))
+
+            frame_resized = overlay_images(frame_resized, mask_resized)
+
             # Convert the frame to ImageTk format
             img = Image.fromarray(frame_resized)
-            img_tk = ImageTk.PhotoImage(image=img)
-
-            # Convert the mask to ImageTk format
-            mask_img = Image.fromarray(mask_resized)
-            mask_img_tk = ImageTk.PhotoImage(image=mask_img)
+            img_tk = ImageTk.PhotoImage(image=img)  
             
             # Update the labels with the new frames
             self.frame1_label.configure(image=img_tk)
             self.frame1_label.image = img_tk
-            
-            self.frame2_label.configure(image=mask_img_tk)
-            self.frame2_label.image = mask_img_tk
-        
+ 
         # Schedule the next frame update
         self.root.after(10, self.update_frames)
 
