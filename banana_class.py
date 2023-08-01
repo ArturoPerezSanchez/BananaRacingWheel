@@ -21,7 +21,7 @@ class banana():
         slope = (self.avg_r-self.avg_l)/(self.x_max - self.x_min)
 
         #Should be (slope)/(pi/2), but works better with (pi/3) due to the object thickness
-        return min(1, max(-1, arctan(slope)/(pi/3)))
+        return -min(1, max(-1, arctan(slope)/(pi/3)))
 
     def getLinePoints(self):
         return ((int(self.x_min), int(self.avg_l)), (int(self.x_max), int(self.avg_r)))
