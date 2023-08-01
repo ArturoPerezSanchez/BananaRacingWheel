@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from utils import flipImg, createMask, loadJSON, detect_objects, addBlackBox, addTextToImg, drawRedRectangle, drawRotationLine
+from utils import flipImg, createMask, loadJSON, detect_objects, addDashboard, addTextToImg, drawRedRectangle, drawRotationLine
 
 def AnalyzeMask(frame, mask):
 
@@ -48,7 +48,6 @@ while True:
     # Read frame-by-frame from the webcam
     _, frame = cap.read()
 
-
     # Flip the frame horizontally
     frame = flipImg(frame)
 
@@ -61,9 +60,6 @@ while True:
     # Analyze the mask to get the object information
     result, avg_position = AnalyzeMask(frame, mask)
 
-    # Create a black image of the same size as the frame
-    result = addBlackBox(result)
-
     # Add a text overlay to the result
     result = addTextToImg(result, "Press Q or ESC to quit")
 
@@ -73,6 +69,9 @@ while True:
     if(banana is not None):
         result = drawRedRectangle(result, banana)
         result = drawRotationLine(result, banana)
+        result = addDashboard(result, rotation=banana.getRotation(), s1=0, s2=0)
+    else:
+        result = addDashboard(result)
 
     # Display the original image, the blue pixels mask, and the resulting image
     cv2.imshow('Webcam', frame)
