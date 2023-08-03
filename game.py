@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-from utils import flipImg, createMask, loadJSON, detect_objects, addDashboard, addTextToImg, drawRedRectangle, drawRotationLine
+from utils import flipImg, createMask, loadJSON, detect_objects, addDashboard, addTextToImg, drawRedRectangle, drawRotationLine, map_value, reset_joystick
+import pyvjoy
 
 def AnalyzeMask(frame, mask):
 
@@ -41,8 +42,26 @@ def AnalyzeMask(frame, mask):
 
     return result, average_position
 
+# Function to set the throttle, wheel, and brake values
+def set_joystick_values(wheel, throttle, brake):
+
+
+    # Map the throttle and brake values from 0-100 to the range supported by vJoy (0-32767)
+    throttle_value = map_value(throttle, 0, 100, 1, 32768)
+    brake_value = map_value(brake, 0, 100, 1, 32768)
+
+    # Map the wheel value from -90 to 90 to the range supported by vJoy
+    wheel_value = map_value(wheel, -90, 90, 1, 32768)
+
+    # Set the axis values
+    j.set_axis(pyvjoy.HID_USAGE_X, wheel_value)  # X-axis (wheel)
+    j.set_axis(pyvjoy.HID_USAGE_Y, throttle_value)  # Y-axis (throttle)
+    j.set_axis(pyvjoy.HID_USAGE_Z, brake_value)  # Z-axis (brake)
+
 # Create a VideoCapture object to access the webcam
 cap = cv2.VideoCapture(0)
+# Create a virtual joystick device with ID 1
+j = pyvjoy.VJoyDevice(1)
 
 while True:
     # Read frame-by-frame from the webcam
@@ -69,7 +88,11 @@ while True:
     if(banana is not None):
         result = drawRedRectangle(result, banana)
         result = drawRotationLine(result, banana)
-        result = addDashboard(result, rotation=banana.getRotation(), s1=banana.getThrottle(speed_treshold), s2=banana.getBrake(speed_treshold))
+        angle = banana.getRotation()
+        throttle = banana.getThrottle(speed_treshold)
+        brake = banana.getBrake(speed_treshold)
+        result = addDashboard(result, rotation=angle, s1=throttle, s2=brake)
+        set_joystick_values(wheel=angle*90, throttle=throttle, brake=brake)
     else:
         result = addDashboard(result)
 
@@ -83,6 +106,8 @@ while True:
     if (c == 27 or c==ord('q')) or (cv2.getWindowProperty('Banana Racing Wheel', cv2.WND_PROP_VISIBLE) < 1):
         break
 
-# Release the VideoCapture object and close the window
+# Release the VideoCapture object, reset the joystick and close the window
 cap.release()
+reset_joystick()
 cv2.destroyAllWindows()
+
