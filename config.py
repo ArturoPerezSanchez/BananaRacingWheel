@@ -35,6 +35,10 @@ class GUI:
                                 length=300, showvalue=1, command=self.update_values)
         self.slider3.pack(pady=5)
 
+        self.slider4 = tk.Scale(self.left_frame, from_=0, to=1000, orient=tk.HORIZONTAL, label="Speed size", tickinterval=200,
+                                length=300, showvalue=1, command=self.update_values)
+        self.slider4.pack(pady=5)
+
         self.color_box = tk.Canvas(self.left_frame, width=150, height=50)
         self.color_box.pack(side=tk.LEFT, padx=10, pady=25)
 
@@ -42,15 +46,17 @@ class GUI:
         self.accept_button = tk.Button(self.left_frame, text="Accept", command=self.accept_values,  width=15, height=3)
         self.accept_button.pack(pady=25)
         
-        r, g, b = loadJSON()
+        r, g, b, s = loadJSON()
         self.slider1.set(r)
         self.slider2.set(g)
         self.slider3.set(b)
+        self.slider4.set(s)
         
         # Initialize the values
         self.red = r
         self.green = g
         self.blue = b
+        self.speed_treshold = s
         
         # Load and display webcam frames in the right frame
         self.frame1_label = tk.Label(self.right_frame)
@@ -70,7 +76,8 @@ class GUI:
         self.red = self.slider1.get()
         self.green = self.slider2.get()
         self.blue = self.slider3.get()
-        
+        self.speed_treshold = self.slider4.get()
+
         # Update the color box
         self.color_box.configure(bg=f"#{self.red:02x}{self.green:02x}{self.blue:02x}")
     
@@ -96,7 +103,7 @@ class GUI:
                 self.banana = banana
                 frame = drawRedRectangle(frame, banana, color=(255,0,0))
                 frame = drawRotationLine(frame, banana, color=(255,0,0))
-                frame = addDashboard(frame, rotation=banana.getRotation(), s1=0, s2=0)
+                frame = addDashboard(frame, rotation=banana.getRotation(), s1=banana.getThrottle(self.speed_treshold), s2=banana.getBrake(self.speed_treshold))
             else:
                 frame = addDashboard(frame, rotation=0, s1=0, s2=0)
             # Resize the frame to fit the GUI
@@ -123,11 +130,11 @@ class GUI:
         config = {
             "red": self.red,
             "green": self.green,
-            "blue": self.blue
+            "blue": self.blue,
+            "speed_treshold": self.speed_treshold
         }
         with open("config.json", "w") as file:
             json.dump(config, file)
-        
         self.root.destroy()  # Close the Tkinter window
 
 
