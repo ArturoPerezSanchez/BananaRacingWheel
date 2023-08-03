@@ -52,10 +52,10 @@ while True:
     frame = flipImg(frame)
 
     # Obtain the selected color from the json file
-    red, green, blue = loadJSON()
+    red, green, blue, speed_treshold = loadJSON()
 
     # Create a mask highlighting the selected color
-    mask = createMask(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), r=red, g=green, b=blue, treshold=50)
+    mask = createMask(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), r=red, g=green, b=blue, treshold=55)
 
     # Analyze the mask to get the object information
     result, avg_position = AnalyzeMask(frame, mask)
@@ -69,7 +69,7 @@ while True:
     if(banana is not None):
         result = drawRedRectangle(result, banana)
         result = drawRotationLine(result, banana)
-        result = addDashboard(result, rotation=banana.getRotation(), s1=0, s2=0)
+        result = addDashboard(result, rotation=banana.getRotation(), s1=banana.getThrottle(speed_treshold), s2=banana.getBrake(speed_treshold))
     else:
         result = addDashboard(result)
 
