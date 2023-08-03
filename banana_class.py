@@ -11,15 +11,15 @@ class banana():
         self.avg_r = avg_r if avg_r else avg_l if avg_l else 1
         self.size = self.getSize()
 
-    def getThrottle(self, treshold, scale_factor=150):
+    def getThrottle(self, treshold, scale_factor=200):
         if self.size <= treshold: return 0
         throttle = min(100, ((self.size - treshold) / treshold)*scale_factor)
-        return int(max(throttle, 15))
+        return int(throttle)
 
-    def getBrake(self, treshold, scale_factor=150):
+    def getBrake(self, treshold, scale_factor=200):
         if self.size >= treshold: return 0
         brake = min(100, ((treshold - self.size) / self.size)*scale_factor)
-        return int(max(brake, 15))
+        return int(brake)
 
     def getSize(self):
         return (self.x_max-self.x_min) + (self.y_max-self.y_min)
