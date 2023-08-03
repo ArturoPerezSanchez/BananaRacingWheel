@@ -14,7 +14,7 @@ def reset_joystick():
 	j = pyvjoy.VJoyDevice(1)  # Create a virtual joystick device with ID 1
 	j.reset()  # Reset all buttons, axes, and POVs to default values
 
-def createMask(hsv_image, r=50, g=50, b=205, treshold=100):
+def createMask(hsv_image, r=50, g=50, b=205, treshold=50):
 	# Define the range of blue color in HSV
 	lower_r = min(255, max(0,r-treshold))
 	upper_r = min(255, max(0,r+treshold))
@@ -80,7 +80,7 @@ def drawRotationLine(image, banana, color=(0, 0, 255), thickness=2):
 
 	return image
 
-def detect_objects(mask, kernel_size=(5, 5)):
+def detect_objects(mask, kernel_size=(3, 3)):
 	# Convert the mask to binary (if it's not already binary)
 	mask_binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)[1]
 
