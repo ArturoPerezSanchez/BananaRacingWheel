@@ -54,7 +54,7 @@ def set_joystick_values(wheel, throttle, brake):
     wheel_value = map_value(wheel, -90, 90, 1, 32768)
 
     # Set the axis values
-    j.set_axis(pyvjoy.HID_USAGE_X, wheel_value)  # X-axis (wheel)
+    j.set_axis(pyvjoy.HID_USAGE_X, -wheel_value + 32768)  # X-axis (wheel)
     j.set_axis(pyvjoy.HID_USAGE_Y, throttle_value)  # Y-axis (throttle)
     j.set_axis(pyvjoy.HID_USAGE_Z, brake_value)  # Z-axis (brake)
 
@@ -74,7 +74,7 @@ while True:
     red, green, blue, speed_treshold = loadJSON()
 
     # Create a mask highlighting the selected color
-    mask = createMask(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), r=red, g=green, b=blue, treshold=55)
+    mask = createMask(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), r=red, g=green, b=blue, treshold=50)
 
     # Analyze the mask to get the object information
     result, avg_position = AnalyzeMask(frame, mask)
@@ -109,5 +109,6 @@ while True:
 # Release the VideoCapture object, reset the joystick and close the window
 cap.release()
 reset_joystick()
+j.reset()
 cv2.destroyAllWindows()
 
