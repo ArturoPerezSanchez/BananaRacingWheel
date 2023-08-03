@@ -4,7 +4,7 @@ import numpy as np
 import json
 from banana_class import banana
 
-def createMask(hsv_image, r=50, g=50, b=205, treshold=50):
+def createMask(hsv_image, r=50, g=50, b=205, treshold=100):
     # Define the range of blue color in HSV
     lower_r = min(255, max(0,r-treshold))
     upper_r = min(255, max(0,r+treshold))
@@ -27,7 +27,7 @@ def flipImg(img):
     return cv2.flip(img, 1)
 
 def loadJSON(filename="config.json"):
-	r, g, b = 0, 0, 0
+	r, g, b, s = 0, 0, 0, 0
 	
 	try:
 		with open(filename, "r") as file:
@@ -35,12 +35,14 @@ def loadJSON(filename="config.json"):
 			r = config.get("red", 0)
 			g = config.get("green", 200)
 			b = config.get("blue", 200)
+			s = config.get("speed_treshold", 250)
 	except (FileNotFoundError, json.JSONDecodeError):
 		# Use default values if config file doesn't exist or has invalid format
 		r = 0
 		g = 200
 		b = 200
-	return r, g, b
+		s = 100
+	return r, g, b, s
 
 def addTextToImg(img, text):
     height, width, _ = img.shape
@@ -68,7 +70,7 @@ def drawRotationLine(image, banana, color=(0, 0, 255), thickness=2):
 
 	return image
 
-def detect_objects(mask, kernel_size=(10, 10)):
+def detect_objects(mask, kernel_size=(5, 5)):
 	# Convert the mask to binary (if it's not already binary)
 	mask_binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)[1]
 
@@ -101,13 +103,10 @@ def detect_objects(mask, kernel_size=(10, 10)):
 					x_max = x
 					right = []
 				right.append(y)
-
-
 			if y_min is None or y < y_min: y_min = y
 			elif y_max is None or y > y_max: y_max = y
-
-		avg_l = np.average(left)
-		avg_r = np.average(right)
+		avg_l = np.average(left) if (len(left) > 0) else 1
+		avg_r = np.average(right) if (len(right) > 0) else 1
 		detected_banana = banana(x_min, y_min, x_max, y_max, avg_l, avg_r)
 		objects.append(detected_banana)
 	
@@ -190,7 +189,7 @@ def drawProgressBar(image, s1=0, s2=0):
 
     # Fill the rectangles
     cv2.rectangle(image, (rect1_x, rect1_y), (rect1_x + rect1_width_filled, rect1_y + rect_height), (0, 200, 0), -1)
-    cv2.rectangle(image, (rect2_x, rect2_y), (rect2_x + rect2_width_filled, rect2_y + rect_height), (0, 0, 255), -1)
+    cv2.rectangle(image, (rect2_x, rect2_y), (rect2_x + rect2_width_filled, rect2_y + rect_height), (200, 0, 0), -1)
 
     # Create the empty rectangles
     cv2.rectangle(image, (rect1_x, rect1_y), (rect1_x + rect_width, rect1_y + rect_height), (255, 255, 255), border_width)
@@ -218,7 +217,6 @@ def addDashboard(original_img, wheel_path="images/wheel.png", box_height=300, ro
     result = np.concatenate((original_img, dashboard), axis=0)
 
     return result
-
 
 def overlay_images(image1, image2):
 
